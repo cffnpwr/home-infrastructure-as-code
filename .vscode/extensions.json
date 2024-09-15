@@ -1,6 +1,11 @@
 {
-    "recommendations": [
-        "editorconfig.editorconfig",
-        "redhat.ansible"
-    ]
+  "recommendations": [
+    "eamodio.gitlens",
+    "EditorConfig.EditorConfig",
+    "DavidAnson.vscode-markdownlint",
+    "gamunu.opentofu",
+    "redhat.ansible",
+    "yzhang.markdown-all-in-one",
+    "ms-azuretools.vscode-docker"
+  ]
 }
