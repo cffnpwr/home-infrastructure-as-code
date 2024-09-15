@@ -5,14 +5,19 @@
   "features": {
     "ghcr.io/robbert229/devcontainer-features/opentofu:1": {
       "version": "1.8.2"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "installTools": false
     }
   },
   "customizations": {
     "vscode": {
       "extensions": [
         "eamodio.gitlens",
+        "EditorConfig.EditorConfig",
         "DavidAnson.vscode-markdownlint",
         "gamunu.opentofu",
+        "redhat.ansible",
         "yzhang.markdown-all-in-one"
       ]
     }
