@@ -1,6 +1,6 @@
 FROM debian:bookworm-slim AS uv
 
-ENV UV_INSTALL_DIR /bin
+ENV UV_INSTALL_DIR /
 
 RUN apt-get -qq update
 RUN apt-get -qq install -y --no-install-recommends curl ca-certificates
