@@ -11,8 +11,9 @@ FROM ghcr.io/opentofu/opentofu:latest AS opentofu
 
 FROM mcr.microsoft.com/devcontainers/base:debian
 
-ENV UV_TOOL_DIR="/usr/local/share/"
-ENV UV_TOOL_BIN_DIR="/usr/local/bin/"
+ENV UV_PYTHON_INSTALL_DIR="/usr/local"
+ENV UV_TOOL_DIR="/usr/local/share"
+ENV UV_TOOL_BIN_DIR="/usr/local/bin"
 ENV PATH="${UV_TOOL_DIR}/ansible/bin:${PATH}"
 
 COPY --from=opentofu /usr/local/bin/tofu /usr/local/bin/tofu
