@@ -19,7 +19,6 @@ ENV PATH="${UV_TOOL_DIR}/ansible/bin:${PATH}"
 COPY --from=opentofu /usr/local/bin/tofu /usr/local/bin/tofu
 COPY --from=uv /bin/uv /usr/local/bin/uv
 
-RUN uv python install; \
-  uv venv; \
-  uv pip install ansible; \
-  uv pip install ansible-lint
+RUN apt-get -qq update; \
+  apt-get -qq install -y --no-install-recommends python-is-python3; \
+  uv pip install --system ansible ansible-lint
