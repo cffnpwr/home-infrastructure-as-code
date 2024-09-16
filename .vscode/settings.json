@@ -1,0 +1,6 @@
+{
+  "ansible.python.interpreterPath": "/usr/local/share/ansible/bin/python",
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/inventory.json": "file:///workspace/hosts.yaml"
+  }
+}

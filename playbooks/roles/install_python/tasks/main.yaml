@@ -1,0 +1,17 @@
+- name: Check Python Installed
+  changed_when: false
+  ansible.builtin.raw: which python
+  register: python_installed
+
+- name: Check Python Version
+  changed_when: false
+  when: python_installed.rc == 0
+  ansible.builtin.raw: python -V
+  register: python_version
+
+- name: Install Python
+  changed_when: false
+  when: python_installed.rc != 0 or "Python 3" not in python_version.stdout
+  ansible.builtin.raw: |-
+    apt-get -qq update
+    apt-get -qq install -y --no-install-recommends python-is-python3
