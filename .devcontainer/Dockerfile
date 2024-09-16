@@ -19,5 +19,7 @@ ENV PATH="${UV_TOOL_DIR}/ansible/bin:${PATH}"
 COPY --from=opentofu /usr/local/bin/tofu /usr/local/bin/tofu
 COPY --from=uv /bin/uv /usr/local/bin/uv
 
-RUN uv tool install ansible; \
-  uv tool install ansible-lint
+RUN uv python install; \
+  uv venv; \
+  uv pip install ansible; \
+  uv pip install ansible-lint
