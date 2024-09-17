@@ -1,5 +1,5 @@
 - name: Preparing Localhost
   ansible.builtin.import_playbook: ./preparing_localhost.yaml
 
-- name: Preparing Ansible
-  ansible.builtin.import_playbook: ./preparing_ansible.yaml
+- name: Preparing
+  ansible.builtin.import_playbook: ./preparing.yaml

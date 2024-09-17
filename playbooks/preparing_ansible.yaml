@@ -1,6 +1,0 @@
-- name: Preparing Ansible
-  hosts: all
-  gather_facts: false
-  become: true
-  roles:
-    - install_python

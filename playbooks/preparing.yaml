@@ -1,0 +1,10 @@
+- name: Preparing
+  hosts: all
+  gather_facts: false
+  roles:
+    - install_python
+    - install_dependencies
+    - swap_off
+    - apply_kernel_module
+    - install_container_runtime
+    - install_kubetools

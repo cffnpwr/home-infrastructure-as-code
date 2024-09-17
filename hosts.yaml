@@ -9,5 +9,10 @@ all:
         worker0:
           ansible_host: 192.168.0.131
   vars:
+    # Ansible
     ansible_user: ansible
     ansible_private_key_file: ./decrypted_key
+    # K8s
+    k8s_version: 1.31
+    cri: containerd
+    cni: cilium
