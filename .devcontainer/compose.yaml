@@ -6,6 +6,7 @@ services:
     volumes:
       - ..:/workspace
     networks:
+      default:
       internal:
         ipv4_address: 10.255.255.254
     tty: true
@@ -13,22 +14,22 @@ services:
     stdin_open: true
 
   controle_plane0:
-    build: 
+    build:
       context: .
       dockerfile: ./Dockerfile.node
     networks:
+      default:
       internal:
         ipv4_address: 10.255.255.10
-    init: true
 
   worker_node0:
-    build: 
+    build:
       context: .
       dockerfile: ./Dockerfile.node
     networks:
+      default:
       internal:
         ipv4_address: 10.255.255.20
-    init: true
 
 networks:
   internal:
