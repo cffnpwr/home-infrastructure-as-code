@@ -1,0 +1,38 @@
+services:
+  iac:
+    build:
+      context: ..
+      dockerfile: ./.devcontainer/Dockerfile
+    volumes:
+      - ..:/workspace
+    networks:
+      internal:
+        ipv4_address: 10.255.255.254
+    tty: true
+    init: true
+    stdin_open: true
+
+  controle_plane0:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.node
+    networks:
+      internal:
+        ipv4_address: 10.255.255.10
+    init: true
+
+  worker_node0:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.node
+    networks:
+      internal:
+        ipv4_address: 10.255.255.20
+    init: true
+
+networks:
+  internal:
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.255.255.0/24
