@@ -20,3 +20,10 @@
     install_recommends: false
     allow_change_held_packages: true
     name: "{{ install_kubetools_apt_packages | product([k8s_version ~ '.*']) | map('join', '=') | list }}"
+
+- name: Hold Kubetools Version
+  become: true
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ install_kubetools_apt_packages }}"
