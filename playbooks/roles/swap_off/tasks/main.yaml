@@ -15,7 +15,7 @@
 - name: Check /etc/fstab
   changed_when: false
   check_mode: false
-  ignore_errors: true
+  failed_when: false
   ansible.builtin.shell:
     cmd: |-
       set -o pipefail
