@@ -1,5 +1,0 @@
-networks:
-  - name: default
-  - name: internal
-    internal: true
-    cidr: 10.255.255.0/24
