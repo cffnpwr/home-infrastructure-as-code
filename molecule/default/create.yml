@@ -37,12 +37,6 @@
         recreate: always
       register: compose_up
 
-    - name: Create Inventory
-      ansible.builtin.template:
-        src: "{{ playbook_dir }}/inventory.yaml.j2"
-        dest: "{{ molecule_ephemeral_directory }}/inventory.yaml"
-        mode: "644"
-
     - name: Create Inventory Config
       ansible.builtin.template:
         src: "{{ playbook_dir }}/inventory_config.yaml.j2"
