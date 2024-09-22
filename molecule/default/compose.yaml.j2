@@ -1,0 +1,19 @@
+services:
+  {% for platform in molecule_yml.platforms -%}
+  {{ platform.name }}:
+    build:
+      context: {{ molecule_ephemeral_directory }}
+      dockerfile: {{ dockerfiles.results[loop.index0].dest }}
+    networks:
+      default:
+      internal:
+        ipv4_address: {{ platform.address }}
+    privileged: true
+  {% endfor %}
+
+networks:
+  internal:
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.255.255.0/24

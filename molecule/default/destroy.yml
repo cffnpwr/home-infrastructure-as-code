@@ -1,0 +1,18 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Check compse.yaml exists
+      ansible.builtin.stat:
+        path: "{{ molecule_ephemeral_directory }}/compose.yaml"
+      register: compose_file
+
+    - name: Docker Compose Down
+      when: compose_file.stat.exists
+      community.docker.docker_compose_v2:
+        project_name: "molecule-local"
+        project_src: "{{ molecule_ephemeral_directory }}"
+        state: absent
+      register: compose_down

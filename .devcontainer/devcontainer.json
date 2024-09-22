@@ -1,8 +1,12 @@
 {
   "name": "cffnpwr home infrastructure as code",
-  "dockerComposeFile": "./compose.yaml",
-  "service": "iac",
+  "dockerFile": "./Dockerfile",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "workspaceFolder": "/workspace",
+  "postCreateCommand": "uv sync",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -12,7 +16,9 @@
         "gamunu.opentofu",
         "ms-azuretools.vscode-docker",
         "redhat.ansible",
-        "yzhang.markdown-all-in-one"
+        "yzhang.markdown-all-in-one",
+        "samuelcolvin.jinjahtml",
+        "tamasfe.even-better-toml"
       ]
     }
   }

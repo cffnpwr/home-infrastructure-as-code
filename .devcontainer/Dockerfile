@@ -11,14 +11,7 @@ FROM ghcr.io/opentofu/opentofu:latest AS opentofu
 
 FROM mcr.microsoft.com/devcontainers/base:debian
 
-ENV UV_PYTHON_INSTALL_DIR="/usr/local"
-ENV UV_TOOL_DIR="/usr/local/share"
-ENV UV_TOOL_BIN_DIR="/usr/local/bin"
-ENV UV_LINK_MODE="clone"
-ENV PATH="${UV_TOOL_DIR}/ansible/bin:${PATH}"
+ENV UV_LINK_MODE="copy"
 
 COPY --from=opentofu /usr/local/bin/tofu /usr/local/bin/tofu
 COPY --from=uv /bin/uv /usr/local/bin/uv
-
-RUN uv tool install ansible; \
-  uv tool install ansible-lint

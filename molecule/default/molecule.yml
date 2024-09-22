@@ -1,0 +1,37 @@
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yaml
+platforms:
+  - name: controle0
+    address: 10.255.255.10
+    image: debian:bookworm-slim
+    groups:
+      - controle_planes
+  - name: controle1
+    address: 10.255.255.11
+    image: debian:bookworm-slim
+    groups:
+      - controle_planes
+  - name: controle2
+    address: 10.255.255.12
+    image: debian:bookworm-slim
+    groups:
+      - controle_planes
+  - name: worker0
+    address: 10.255.255.20
+    image: debian:bookworm-slim
+    groups:
+      - worker_nodes
+provisioner:
+  name: ansible
+  ansible_args:
+    - --inventory=../../hosts_test.yaml
+  lint:
+    name: yamllint
+  config_options:
+    defaults:
+      vault_password_file: "${MOLECULE_SCENARIO_DIRECTORY}/vault_password"
+  inventory:
+    links:
+      group_vars: ../../group_vars

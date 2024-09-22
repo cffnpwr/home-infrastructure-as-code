@@ -1,0 +1,62 @@
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - ./vars/main.yaml
+  tasks:
+    - name: Create Dockerfile
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/Dockerfile.j2"
+        dest: "{{ molecule_ephemeral_directory }}/Dockerfile.{{ item.name | regex_replace('[^a-zA-Z0-9_]', '_') }}"
+        mode: "644"
+      loop: "{{ molecule_yml.platforms }}"
+      register: dockerfiles
+
+    - name: Build Docker Image from Dockerfile
+      community.docker.docker_image:
+        build:
+          path: "{{ molecule_ephemeral_directory }}"
+          dockerfile: "{{ item.dest }}"
+        source: build
+        name: "molecule-local-{{ item.item.name }}"
+      loop: "{{ dockerfiles.results }}"
+
+    - name: Create Docker Compose File
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/compose.yaml.j2"
+        dest: "{{ molecule_ephemeral_directory }}/compose.yaml"
+        mode: "644"
+      register: compose
+
+    - name: Docker Compose Up
+      community.docker.docker_compose_v2:
+        project_name: "molecule-local"
+        project_src: "{{ molecule_ephemeral_directory }}"
+        state: present
+        recreate: always
+      register: compose_up
+
+    - name: Create Inventory
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/inventory.yaml.j2"
+        dest: "{{ molecule_ephemeral_directory }}/inventory.yaml"
+        mode: "644"
+
+    - name: Create Inventory Config
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/inventory_config.yaml.j2"
+        dest: "{{ molecule_instance_config }}"
+        mode: "644"
+
+    - name: Force inventory refresh
+      ansible.builtin.meta: refresh_inventory
+
+    - name: Copy Private Key
+      vars:
+        src_key: ./encrypted_key
+        dest_key: ./decrypted_key
+      ansible.builtin.copy:
+        src: "{{ lookup('env', 'PWD') }}/{{ src_key }}"
+        dest: "{{ molecule_ephemeral_directory }}/{{ dest_key }}"
+        mode: "600"
