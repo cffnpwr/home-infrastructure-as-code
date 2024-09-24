@@ -1,0 +1,6 @@
+{% for ssh in ssh_config | zip(molecule_yml.platforms) | list %}
+- instance: {{ ssh[0].Host }}
+  address: {{ ssh[1].address }}
+  user: {{ ssh[0].User }}
+  identity_file: {{ ssh[0].IdentityFile }}
+{% endfor %}

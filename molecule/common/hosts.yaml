@@ -1,13 +1,4 @@
 all:
-  children:
-    controle_planes:
-      hosts:
-        controle0:
-          ansible_host: 10.255.255.10
-    worker_nodes:
-      hosts:
-        worker0:
-          ansible_host: 10.255.255.20
   vars:
     # Ansible
     ansible_user: ansible

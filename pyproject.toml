@@ -5,6 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
   "ansible",
   "ansible-lint",
+  "jmespath>=1.0.1",
   "molecule",
   "requests",
 ]

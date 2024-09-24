@@ -1,6 +1,0 @@
-{% for platform in molecule_yml.platforms %}
-- instance: {{ platform.name }}
-  address: {{ platform.address }}
-  user: ansible
-  identity_file: {{ molecule_ephemeral_directory }}/decrypted_key
-{% endfor %}

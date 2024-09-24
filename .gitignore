@@ -5,6 +5,7 @@
 encrypted_key
 decrypted_key
 group_vars/all.yaml
+vault_pass
 
 ### Terraform ###
 # Local .terraform directories

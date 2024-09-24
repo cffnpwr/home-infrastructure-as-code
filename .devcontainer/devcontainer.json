@@ -3,10 +3,26 @@
   "dockerFile": "./Dockerfile",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "uv sync",
-  "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-  },
+  "postCreateCommand": "uv sync; vagrant plugin install vagrant-libvirt",
+  "mounts": [
+    {
+      "source": "/lib/modules",
+      "target": "/lib/modules",
+      "type": "bind"
+    },
+    {
+      "source": "/dev",
+      "target": "/dev",
+      "type": "bind"
+    },
+    {
+      "source": "vagrant-libvirt",
+      "target": "/vscode/.vagrant.d",
+      "type": "volume"
+    }
+  ],
+  "overrideCommand": false,
+  "privileged": true,
   "customizations": {
     "vscode": {
       "extensions": [

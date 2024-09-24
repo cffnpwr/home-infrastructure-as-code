@@ -1,0 +1,17 @@
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Check Vagrantfile exists
+      ansible.builtin.stat:
+        path: "{{ molecule_ephemeral_directory }}/Vagrantfile"
+      register: vagrantfile
+
+    - name: Vagrant Destroy
+      changed_when: false
+      when: vagrantfile.stat.exists
+      ansible.builtin.command:
+        cmd: vagrant destroy -f
+        chdir: "{{ molecule_ephemeral_directory }}"
+      register: vagrant_destroy

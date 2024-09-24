@@ -1,0 +1,52 @@
+- name: Create VM
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  tasks:
+    - name: Check Vagrantfile exists
+      ansible.builtin.stat:
+        path: "{{ molecule_ephemeral_directory }}/Vagrantfile"
+      register: vagrantfile
+
+    - name: Vagrant Destroy
+      changed_when: false
+      when: vagrantfile.stat.exists
+      ansible.builtin.command:
+        cmd: vagrant destroy -f
+        chdir: "{{ molecule_ephemeral_directory }}"
+
+    - name: Generate Vagrantfile
+      vars:
+        vm_configs: "{{ molecule_yml.platforms }}"
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/templates/Vagrantfile.j2"
+        dest: "{{ molecule_ephemeral_directory }}/Vagrantfile"
+
+    - name: Vagrant Up
+      changed_when: false
+      ansible.builtin.command:
+        cmd: vagrant up --provider libvirt
+        chdir: "{{ molecule_ephemeral_directory }}"
+
+    - name: Get SSH Config
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          set -o pipefail
+          vagrant ssh-config | sed '/^$/d' | awk '$1 == "Host" {print "- "$1": "$2} $1 != "Host" {print "  "$1": "$2}'
+        chdir: "{{ molecule_ephemeral_directory }}"
+        executable: /bin/bash
+      register: _ssh_config
+
+    - name: Set SSH Config
+      ansible.builtin.set_fact:
+        ssh_config: "{{ _ssh_config.stdout | from_yaml }}"
+
+    - name: Create Inventory Config
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/templates/inventory_config.yaml.j2"
+        dest: "{{ molecule_instance_config }}"
+        mode: "644"
+
+    - name: Force inventory refresh
+      ansible.builtin.meta: refresh_inventory

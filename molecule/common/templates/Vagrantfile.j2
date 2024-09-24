@@ -1,0 +1,34 @@
+class VmSpec
+  attr_reader :name, :box, :cpus, :memory, :ip_addr, :provider
+
+  def initialize(name, box, cpus, memory, ip_addr, provider)
+    @name = name
+    @box = box
+    @cpus = cpus
+    @memory = memory
+    @ip_addr = ip_addr
+    @provider = provider
+  end
+end
+
+VM_SPECS = [
+{% for vm_config in vm_configs %}
+  VmSpec.new("{{ vm_config.name }}", "{{ vm_config.box }}", 2, 2048, "{{ vm_config.address }}", "libvirt"),
+{% endfor %}
+].freeze
+
+Vagrant.configure("2") do |config|
+  VM_SPECS.each do |vm_spec|
+    config.vm.define vm_spec.name do |vm|
+      vm.vm.box = vm_spec.box
+      vm.vm.hostname = vm_spec.name
+      vm.vm.network "private_network", ip: vm_spec.ip_addr, auto_config: true
+      vm.vm.provider vm_spec.provider do |provider|
+        provider.memory = vm_spec.memory
+        provider.cpus = vm_spec.cpus
+
+        provider.management_network_address = "10.255.255.0/24"
+      end
+    end
+  end
+end
