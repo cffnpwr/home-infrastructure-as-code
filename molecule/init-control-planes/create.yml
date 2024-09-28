@@ -1,0 +1,75 @@
+- name: Check Prepared VM Required
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Check Prepared VM Required
+      changed_when: false
+      failed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          set -o pipefail
+          vagrant box list | grep cloud-image/debian-12-prepared
+        chdir: "{{ molecule_ephemeral_directory }}"
+        executable: /bin/bash
+      register: _check
+
+    - name: Collect Dependes Files
+      ansible.builtin.find:
+        paths:
+          - "{{ playbook_dir }}/../common/"
+          - "{{ playbook_dir }}/../prepare/"
+          - "{{ playbook_dir }}/../../playbooks/roles/preparing/"
+          - "{{ playbook_dir }}/../../playbooks/roles/install_python/"
+        file_type: file
+        recurse: true
+        use_regex: true
+        patterns: .*\.(ya?ml|j2)
+      register: _find
+
+    - name: Add Files to Dependencies
+      vars:
+        addional_files:
+          - "{{ playbook_dir }}/create.yml"
+      ansible.builtin.set_fact:
+        files: "{{ (_find.files | map(attribute='path') | list) + addional_files }}"
+
+    - name: Get Hashes
+      ansible.builtin.set_fact:
+        existing_hashes: "{{ lookup('file', lookup('env', 'HOME') ~ '/.cache/dependencies.yaml', errors='ignore') | default('') | from_yaml }}"
+        new_hashes: "{{ query('file', *files) | map('hash', 'sha256') | list }}"
+
+    - name: Check Dependencies Updated
+      ansible.utils.fact_diff:
+        before: "{{ existing_hashes }}"
+        after: "{{ new_hashes }}"
+      register: _diff
+
+    - name: Update Dependencies
+      ansible.builtin.copy:
+        content: "{{ new_hashes | to_nice_yaml }}"
+        dest: "{{ lookup('env', 'HOME') }}/.cache/dependencies.yaml"
+      when: _diff.diff_lines | length > 0
+
+    - name: Set VM Recreate Flag
+      ansible.builtin.set_fact:
+        recreate_vm: "{{ _check.rc != 0 or _diff.diff_lines | length > 0 }}"
+
+    - name: Remove Prepared VM
+      ansible.builtin.command:
+        cmd: vagrant box remove --force cloud-image/debian-12-prepared
+      when: _check.rc == 0 and _diff.diff_lines | length > 0
+
+- name: Recreate VM
+  when: recreate_vm
+  ansible.builtin.import_playbook: ./recreate_vm.yml
+
+- name: Refresh Inventory
+  hosts: localhost
+  tasks:
+    - name: Remove Preparing VM
+      ansible.builtin.meta: refresh_inventory
+
+- name: Create
+  vars:
+    vm_configs: "{{ molecule_yml.platforms }}"
+  ansible.builtin.import_playbook: ../common/create_vm.yaml

@@ -1,0 +1,6 @@
+install_dependencies_apt:
+  - ca-certificates
+  - gnupg2
+  - python3-kubernetes
+  - python3-netaddr
+  - socat

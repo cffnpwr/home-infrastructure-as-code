@@ -1,0 +1,11 @@
+- name: Init First Control Plane
+  hosts: "{{ target | default('control_planes[0]') }}"
+  roles:
+    - init_control_planes/init_first_control_plane
+    - init_control_planes/install_cni
+    - init_control_planes/deploy_kube_vip
+
+- name: Init Additional Control Planes
+  hosts: "{{ target | default('control_planes[1:]') }}"
+  roles:
+    - init_control_planes/join_control_planes

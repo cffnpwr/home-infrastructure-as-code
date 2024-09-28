@@ -1,0 +1,4 @@
+preparing_install_kubetools_apt_packages:
+  - kubeadm
+  - kubectl
+  - kubelet

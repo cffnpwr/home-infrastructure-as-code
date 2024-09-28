@@ -16,11 +16,10 @@
         chdir: "{{ molecule_ephemeral_directory }}"
 
     - name: Generate Vagrantfile
-      vars:
-        vm_configs: "{{ molecule_yml.platforms }}"
       ansible.builtin.template:
         src: "{{ playbook_dir }}/templates/Vagrantfile.j2"
         dest: "{{ molecule_ephemeral_directory }}/Vagrantfile"
+        mode: "644"
 
     - name: Vagrant Up
       changed_when: false

@@ -4,5 +4,6 @@
     "file:///root/.vscode-remote/extensions/atlassian.atlascode-2.10.12/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml",
     "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/inventory.json": "file:///workspace/hosts.yaml",
     "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook": "file:///workspace/molecule/default/create.yml"
-  }
+  },
+  "ansible.executionEnvironment.enabled": false
 }

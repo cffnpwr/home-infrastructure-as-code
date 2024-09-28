@@ -26,8 +26,6 @@ Vagrant.configure("2") do |config|
       vm.vm.provider vm_spec.provider do |provider|
         provider.memory = vm_spec.memory
         provider.cpus = vm_spec.cpus
-
-        provider.management_network_address = "10.255.255.0/24"
       end
     end
   end

@@ -1,0 +1,25 @@
+- name: Make /etc/modules-load.d
+  become: true
+  ansible.builtin.file:
+    path: /etc/modules-load.d
+    state: directory
+    mode: "644"
+
+- name: Confirure Kernel Modules
+  become: true
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+    persistent: present
+  loop: "{{ preparing_apply_kernel_module_kernel_modules }}"
+
+- name: Configure Kernel Params
+  become: true
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: true
+    sysctl_file: /etc/sysctl.d/99-k8s.conf
+    reload: true
+  loop: "{{ preparing_apply_kernel_module_kernel_params }}"

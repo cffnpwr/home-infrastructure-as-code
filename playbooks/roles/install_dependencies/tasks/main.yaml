@@ -1,8 +1,0 @@
-- name: Install Dependencies
-  become: true
-  ansible.builtin.apt:
-    update_cache: true
-    install_recommends: false
-    name:
-      - ca-certificates
-      - gnupg2

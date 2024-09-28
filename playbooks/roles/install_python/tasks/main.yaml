@@ -14,7 +14,6 @@
 - name: Install Python
   become: true
   changed_when: false
-  failed_when: false
   when: python_installed.rc != 0 or "Python 3" not in python_version.stdout
   ansible.builtin.raw: |-
     apt-get -qq update

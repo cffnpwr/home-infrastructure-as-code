@@ -17,7 +17,7 @@
     },
     {
       "source": "vagrant-libvirt",
-      "target": "/vscode/.vagrant.d",
+      "target": "/home/vscode/.vagrant.d",
       "type": "volume"
     }
   ],

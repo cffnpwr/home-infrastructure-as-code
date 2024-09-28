@@ -1,2 +1,4 @@
 - name: Build VM
+  vars:
+    vm_configs: "{{ molecule_yml.platforms }}"
   ansible.builtin.import_playbook: ../common/create_vm.yaml

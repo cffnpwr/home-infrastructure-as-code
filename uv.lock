@@ -1,5 +1,9 @@
 version = 1
 requires-python = ">=3.12"
+resolution-markers = [
+    "platform_system != 'Windows'",
+    "platform_system == 'Windows'",
+]
 
 [[package]]
 name = "ansible"
@@ -49,22 +53,53 @@ wheels = [
 name = "ansible-lint"
 version = "6.8.7"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "platform_system == 'Windows'",
+]
 dependencies = [
-    { name = "ansible-compat" },
-    { name = "ansible-core" },
-    { name = "black" },
-    { name = "filelock" },
-    { name = "jsonschema" },
-    { name = "packaging" },
-    { name = "pyyaml" },
-    { name = "rich" },
-    { name = "ruamel-yaml" },
-    { name = "wcmatch" },
-    { name = "yamllint" },
+    { name = "ansible-compat", marker = "platform_system == 'Windows'" },
+    { name = "ansible-core", marker = "platform_system == 'Windows'" },
+    { name = "black", marker = "platform_system == 'Windows'" },
+    { name = "filelock", marker = "platform_system == 'Windows'" },
+    { name = "jsonschema", marker = "platform_system == 'Windows'" },
+    { name = "packaging", marker = "platform_system == 'Windows'" },
+    { name = "pyyaml", marker = "platform_system == 'Windows'" },
+    { name = "rich", marker = "platform_system == 'Windows'" },
+    { name = "ruamel-yaml", version = "0.17.40", source = { registry = "https://pypi.org/simple" }, marker = "platform_system == 'Windows'" },
+    { name = "wcmatch", marker = "platform_system == 'Windows'" },
+    { name = "yamllint", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/6a/83/08cd79e47452c0faf9325e19c9a1dd26fabfeaaa8733804165a066c19479/ansible-lint-6.8.7.tar.gz", hash = "sha256:de3de4e57cd54e17c1ec3a0b4a21d4811838e77d67b56cbe8f91107f2a434432", size = 315996 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/02/d1/00064932c45ea1d91792d18561d0f6d0594ff8c4f03f073c3300b90a0e14/ansible_lint-6.8.7-py3-none-any.whl", hash = "sha256:1824afce2a5619b47c19f6377a0d85b4f39e80b1fc1857191d6a908d68396bf9", size = 232998 },
+]
+
+[[package]]
+name = "ansible-lint"
+version = "24.9.2"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "platform_system != 'Windows'",
+]
+dependencies = [
+    { name = "ansible-compat", marker = "platform_system != 'Windows'" },
+    { name = "ansible-core", marker = "platform_system != 'Windows'" },
+    { name = "black", marker = "platform_system != 'Windows'" },
+    { name = "filelock", marker = "platform_system != 'Windows'" },
+    { name = "importlib-metadata", marker = "platform_system != 'Windows'" },
+    { name = "jsonschema", marker = "platform_system != 'Windows'" },
+    { name = "packaging", marker = "platform_system != 'Windows'" },
+    { name = "pathspec", marker = "platform_system != 'Windows'" },
+    { name = "pyyaml", marker = "platform_system != 'Windows'" },
+    { name = "rich", marker = "platform_system != 'Windows'" },
+    { name = "ruamel-yaml", version = "0.18.6", source = { registry = "https://pypi.org/simple" }, marker = "platform_system != 'Windows'" },
+    { name = "subprocess-tee", marker = "platform_system != 'Windows'" },
+    { name = "wcmatch", marker = "platform_system != 'Windows'" },
+    { name = "yamllint", marker = "platform_system != 'Windows'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cc/7a/6b4f1d54c8d5157a97a9ebeee77398871b15e2cffa41e3e425af1717244e/ansible_lint-24.9.2.tar.gz", hash = "sha256:7cff6c5af10ef996b7c6010cbd48c91592764ae098f2b05408726899a1066a7f", size = 536244 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/58/0f/7df71aa5d9b209737377fc452f25bb42d47b80475539d26a01e348417071/ansible_lint-24.9.2-py3-none-any.whl", hash = "sha256:8c3ad2aaf857390af803959a96c650c35ea921fba6b32d92d11b2d248761bfea", size = 307914 },
 ]
 
 [[package]]
@@ -234,6 +269,15 @@ wheels = [
 ]
 
 [[package]]
+name = "dnspython"
+version = "2.6.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/37/7d/c871f55054e403fdfd6b8f65fd6d1c4e147ed100d3e9f9ba1fe695403939/dnspython-2.6.1.tar.gz", hash = "sha256:e8f0f9c23a7b7cb99ded64e6c3a6f3e701d78f50c55e002b839dea7225cff7cc", size = 332727 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/87/a1/8c5287991ddb8d3e4662f71356d9656d91ab3a36618c3dd11b280df0d255/dnspython-2.6.1-py3-none-any.whl", hash = "sha256:5ef3b9680161f6fa89daf8ad451b5f1a33b18ae8a1c6778cdf4b43f08c0a6e50", size = 307696 },
+]
+
+[[package]]
 name = "enrich"
 version = "1.2.7"
 source = { registry = "https://pypi.org/simple" }
@@ -260,19 +304,33 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "ansible" },
-    { name = "ansible-lint" },
+    { name = "dnspython" },
     { name = "jmespath" },
-    { name = "molecule" },
+    { name = "netaddr" },
     { name = "requests" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "ansible-lint", version = "6.8.7", source = { registry = "https://pypi.org/simple" }, marker = "platform_system == 'Windows'" },
+    { name = "ansible-lint", version = "24.9.2", source = { registry = "https://pypi.org/simple" }, marker = "platform_system != 'Windows'" },
+    { name = "molecule" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "ansible" },
-    { name = "ansible-lint" },
+    { name = "dnspython", specifier = ">=2.6.1" },
     { name = "jmespath", specifier = ">=1.0.1" },
-    { name = "molecule" },
+    { name = "netaddr", specifier = ">=1.3.0" },
     { name = "requests" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "ansible-lint", specifier = ">=6.8.7" },
+    { name = "ansible-lint", marker = "platform_system != 'Windows'", specifier = ">=24.9.2" },
+    { name = "molecule", specifier = ">=24.9.0" },
 ]
 
 [[package]]
@@ -282,6 +340,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f1/70/7703c29685631f5a7590aa73f1f1d3fa9a380e654b86af429e0934a32f7d/idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9", size = 190490 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/76/c6/c88e154df9c4e1a2a66ccf0005a88dfb2650c1dffb6f5ce603dfbd452ce3/idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3", size = 70442 },
+]
+
+[[package]]
+name = "importlib-metadata"
+version = "8.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "zipp", marker = "platform_system != 'Windows'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cd/12/33e59336dca5be0c398a7482335911a33aa0e20776128f038019f1a95f1b/importlib_metadata-8.5.0.tar.gz", hash = "sha256:71522656f0abace1d072b9e5481a48f07c138e00f079c38c8f883823f9c26bd7", size = 55304 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a0/d9/a1e041c5e7caa9a05c925f4bdbdfb7f006d1f74996af53467bc394c97be7/importlib_metadata-8.5.0-py3-none-any.whl", hash = "sha256:45e54197d28b7a7f1559e60b95e7c567032b602131fbd588f1497f47880aa68b", size = 26514 },
 ]
 
 [[package]]
@@ -401,6 +471,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/98/a4/1ab47638b92648243faf97a5aeb6ea83059cc3624972ab6b8d2316078d3f/mypy_extensions-1.0.0.tar.gz", hash = "sha256:75dbf8955dc00442a438fc4d0666508a9a97b6bd41aa2f0ffe9d2f2725af0782", size = 4433 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2a/e2/5d3f6ada4297caebe1a2add3b126fe800c96f56dbe5d1988a2cbe0b267aa/mypy_extensions-1.0.0-py3-none-any.whl", hash = "sha256:4392f6c0eb8a5668a69e23d168ffa70f0be9ccfd32b5cc2d26a34ae5b844552d", size = 4695 },
+]
+
+[[package]]
+name = "netaddr"
+version = "1.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/90/188b2a69654f27b221fba92fda7217778208532c962509e959a9cee5229d/netaddr-1.3.0.tar.gz", hash = "sha256:5c3c3d9895b551b763779ba7db7a03487dc1f8e3b385af819af341ae9ef6e48a", size = 2260504 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/cc/f4fe2c7ce68b92cbf5b2d379ca366e1edae38cccaad00f69f529b460c3ef/netaddr-1.3.0-py3-none-any.whl", hash = "sha256:c2c6a8ebe5554ce33b7d5b3a306b71bbb373e000bbbf2350dd5213cc56e3dbbe", size = 2262023 },
 ]
 
 [[package]]
@@ -571,12 +650,30 @@ wheels = [
 name = "ruamel-yaml"
 version = "0.17.40"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "platform_system == 'Windows'",
+]
 dependencies = [
-    { name = "ruamel-yaml-clib", marker = "python_full_version < '3.13' and platform_python_implementation == 'CPython'" },
+    { name = "ruamel-yaml-clib", marker = "python_full_version < '3.13' and platform_python_implementation == 'CPython' and platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/d1/d6/eb2833ccba5ea36f8f4de4bcfa0d1a91eb618f832d430b70e3086821f251/ruamel.yaml-0.17.40.tar.gz", hash = "sha256:6024b986f06765d482b5b07e086cc4b4cd05dd22ddcbc758fa23d54873cf313d", size = 137672 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/35/79/5e2cffa1c77432f11cd93a5351f30732c997a239d3a3090856a72d6d8ba7/ruamel.yaml-0.17.40-py3-none-any.whl", hash = "sha256:b16b6c3816dff0a93dca12acf5e70afd089fa5acb80604afd1ffa8b465b7722c", size = 113666 },
+]
+
+[[package]]
+name = "ruamel-yaml"
+version = "0.18.6"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "platform_system != 'Windows'",
+]
+dependencies = [
+    { name = "ruamel-yaml-clib", marker = "python_full_version < '3.13' and platform_python_implementation == 'CPython' and platform_system != 'Windows'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/29/81/4dfc17eb6ebb1aac314a3eb863c1325b907863a1b8b1382cdffcb6ac0ed9/ruamel.yaml-0.18.6.tar.gz", hash = "sha256:8b27e6a217e786c6fbe5634d8f3f11bc63e0f80f6a5890f28863d9c45aac311b", size = 143362 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/73/67/8ece580cc363331d9a53055130f86b096bf16e38156e33b1d3014fffda6b/ruamel.yaml-0.18.6-py3-none-any.whl", hash = "sha256:57b53ba33def16c4f3d807c0ccbc00f8a6081827e81ba2491691b76882d0c636", size = 117761 },
 ]
 
 [[package]]
@@ -636,4 +733,13 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/da/06/d8cee5c3dfd550cc0a466ead8b321138198485d1034130ac1393cc49d63e/yamllint-1.35.1.tar.gz", hash = "sha256:7a003809f88324fd2c877734f2d575ee7881dd9043360657cc8049c809eba6cd", size = 134583 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/09/28/2abf1ec14df2d584b9e7ce3b0be458838741e6aaff7a540374ba9af83916/yamllint-1.35.1-py3-none-any.whl", hash = "sha256:2e16e504bb129ff515b37823b472750b36b6de07963bd74b307341ef5ad8bdc3", size = 66738 },
+]
+
+[[package]]
+name = "zipp"
+version = "3.20.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/bf/5c0000c44ebc80123ecbdddba1f5dcd94a5ada602a9c225d84b5aaa55e86/zipp-3.20.2.tar.gz", hash = "sha256:bc9eb26f4506fda01b81bcde0ca78103b6e62f991b381fec825435c836edbc29", size = 24199 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/62/8b/5ba542fa83c90e09eac972fc9baca7a88e7e7ca4b221a89251954019308b/zipp-3.20.2-py3-none-any.whl", hash = "sha256:a817ac80d6cf4b23bf7f2828b7cabf326f15a001bea8b1f9b49631780ba28350", size = 9200 },
 ]

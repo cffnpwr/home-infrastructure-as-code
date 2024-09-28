@@ -3,3 +3,6 @@
 
 - name: Preparing
   ansible.builtin.import_playbook: ./preparing.yaml
+
+- name: Init Control Planes
+  ansible.builtin.import_playbook: ./init_control_planes.yaml
