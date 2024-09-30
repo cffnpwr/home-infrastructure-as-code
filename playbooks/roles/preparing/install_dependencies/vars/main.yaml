@@ -1,4 +1,4 @@
-install_dependencies_apt:
+preparing_install_dependencies_apt:
   - ca-certificates
   - gnupg2
   - python3-kubernetes

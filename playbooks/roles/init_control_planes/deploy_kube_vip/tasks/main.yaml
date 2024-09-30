@@ -34,6 +34,7 @@
     network_mode: host
     detach: false
     cleanup: true
+    # yamllint disable-line rule:line-length
     command: manifest daemonset --interface {{ interface }} --address {{ vip }} --inCluster --taint --controlplane --services --bgp --localAS 65000 --bgpRouterID
       {{ ip_address }} --bgppeers {{ bgp_peers }}
   register: kube_vip

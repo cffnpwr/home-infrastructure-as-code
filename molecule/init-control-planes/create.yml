@@ -48,6 +48,7 @@
       ansible.builtin.copy:
         content: "{{ new_hashes | to_nice_yaml }}"
         dest: "{{ lookup('env', 'HOME') }}/.cache/dependencies.yaml"
+        mode: "644"
       when: _diff.diff_lines | length > 0
 
     - name: Set VM Recreate Flag
@@ -55,6 +56,7 @@
         recreate_vm: "{{ _check.rc != 0 or _diff.diff_lines | length > 0 }}"
 
     - name: Remove Prepared VM
+      changed_when: false
       ansible.builtin.command:
         cmd: vagrant box remove --force cloud-image/debian-12-prepared
       when: _check.rc == 0 and _diff.diff_lines | length > 0

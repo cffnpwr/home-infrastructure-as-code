@@ -11,7 +11,7 @@
       ansible.builtin.file:
         path: "{{ item }}"
         state: absent
-      loop: "{{ init_control_planes_join_worker_nodes_delete_configs }}"
+      loop: "{{ join_worker_nodes_delete_configs }}"
 
     - name: Kubeadm Join
       become: true
