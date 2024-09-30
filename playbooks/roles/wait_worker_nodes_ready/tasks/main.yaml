@@ -1,0 +1,10 @@
+- name: Wait Node Ready
+  failed_when: false
+  kubernetes.core.k8s_info:
+    kind: Node
+  register: node_info
+  # yamllint disable rule:line-length
+  until: node_info.resources is defined and node_info | json_query('resources[?status.addresses[?type==`InternalIP`&&address==`' ~ item ~ '`]].status.conditions[] | [?type==`Ready`] | [0].status') == 'True'
+  retries: 60
+  delay: 10
+  loop: "{{ groups['worker_nodes'] | map('extract', hostvars, ['ansible_host']) | list }}"

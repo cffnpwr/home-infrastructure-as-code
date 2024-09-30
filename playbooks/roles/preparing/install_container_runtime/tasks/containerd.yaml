@@ -44,14 +44,17 @@
     state: directory
     mode: "775"
 
+- name: Get Containerd Default Config
+  changed_when: false
+  ansible.builtin.command: containerd config default
+  register: containerd_default_config
+
 - name: Configure Containerd
   become: true
-  changed_when: false
-  ansible.builtin.shell:
-    cmd: |-
-      set -o pipefail
-      containerd config default | sed -e 's/SystemdCgroup = .*/SystemdCgroup = true/' > /etc/containerd/config.toml
-    executable: /bin/bash
+  ansible.builtin.copy:
+    content: "{{ containerd_default_config.stdout_lines | join('\n') | regex_replace('SystemdCgroup = .*', 'SystemdCgroup = true') }}"
+    dest: /etc/containerd/config.toml
+    mode: "644"
   notify:
     - restart_containerd
 

@@ -6,3 +6,6 @@
 
 - name: Init Control Planes
   ansible.builtin.import_playbook: ./init_control_planes.yaml
+
+- name: Init Worker Nodes
+  ansible.builtin.import_playbook: ./init_worker_nodes.yaml
