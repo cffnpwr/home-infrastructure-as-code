@@ -41,4 +41,4 @@ jobs:
       - name: molecule test
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: ${PWD}/vault_pass
-        run: sudo -s -E -u ${USER} uv run molecule test
+        run: sudo -s -u ${USER} /home/runner/.local/bin/uv run molecule test
