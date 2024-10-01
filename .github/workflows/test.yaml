@@ -47,4 +47,4 @@ jobs:
         run: echo "${PRIVATE_KEY}" > ${PWD}/encrypted_key
 
       - name: molecule test
-        run: sudo -s -u ${USER} ${{ env.UV_PATH }} ANSIBLE_VAULT_PASSWORD_FILE="${PWD}/vault_pass" run molecule test
+        run: sudo -s -u ${USER} ANSIBLE_VAULT_PASSWORD_FILE="${PWD}/vault_pass" ${{ env.UV_PATH }} run molecule test
