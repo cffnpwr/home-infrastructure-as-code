@@ -4,6 +4,10 @@ on:
     branches-ignore:
       - main
       - release/*
+    paths:
+      - molecule/**
+      - playbooks/**
+      - .github/workflows/lint.yaml
 
 jobs:
   ansible_lint:

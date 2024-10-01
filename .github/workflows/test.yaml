@@ -4,6 +4,10 @@ on:
     branches:
       - main
       - release/*
+    paths:
+      - molecule/**
+      - playbooks/**
+      - .github/workflows/test.yaml
 
 jobs:
   molecule:
@@ -37,4 +41,4 @@ jobs:
       - name: molecule test
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: ${PWD}/vault_pass
-        run: sudo -s -u ${USER} uv run molecule test
+        run: sudo -s -E -u ${USER} uv run molecule test
