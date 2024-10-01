@@ -1,0 +1,72 @@
+- name: Verify kubernetes cluster
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Get Node Info
+      kubernetes.core.k8s_info:
+        kind: Node
+        kubeconfig: /tmp/kubeconfig
+      register: node_info
+
+    - name: Configure /etc/hosts
+      block:
+        - name: Add the VIP and the API server endpoint to /etc/hosts
+          become: true
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            regexp: ^{{ vip }}
+            line: "{{ vip }} {{ apiserver_endpoint }}"
+
+      rescue:
+        - name: Copy /etc/hosts to /tmp/hosts
+          ansible.builtin.copy:
+            remote_src: true
+            src: /etc/hosts
+            dest: /tmp/hosts
+            mode: "644"
+
+        - name: Add the VIP and the API server endpoint to /tmp/hosts
+          ansible.builtin.lineinfile:
+            path: /tmp/hosts
+            regexp: ^{{ vip }}
+            line: "{{ vip }} {{ apiserver_endpoint }}"
+
+        - name: Copy /tmp/hosts to /etc/hosts
+          changed_when: false
+          become: true
+          ansible.builtin.command: cp /tmp/hosts /etc/hosts
+
+        - name: Remove /tmp/hosts
+          changed_when: false
+          ansible.builtin.file:
+            path: /tmp/hosts
+            state: absent
+
+    - name: Check 6 nodes are present
+      ansible.builtin.assert:
+        that: node_info.resources | length == 6
+        fail_msg: "Expected 6 nodes, got {{ node_info.resources | length }}"
+        success_msg: "6 nodes found"
+
+    - name: Check 3 control planes are present
+      vars:
+        # yamllint disable rule:line-length
+        control_plane_nodes_count: "{{ node_info.resources | selectattr('metadata.labels', 'defined') | selectattr('metadata.labels', 'search', 'node-role.kubernetes.io/control-plane') | list | length }}"
+      ansible.builtin.assert:
+        that: control_plane_nodes_count == '3'
+        fail_msg: "Expected 3 control planes, got {{ control_plane_nodes_count }}"
+        success_msg: "3 control planes found"
+
+    - name: Check 3 worker nodes are present
+      vars:
+        worker_nodes_count: "{{ node_info.resources | selectattr('metadata.labels', 'defined') | rejectattr('metadata.labels', 'search', 'node-role.kubernetes.io/control-plane') | list | length }}"
+      ansible.builtin.assert:
+        that: worker_nodes_count == '3'
+        fail_msg: "Expected 3 worker nodes, got {{ worker_nodes_count }}"
+        success_msg: "3 worker nodes found"
+
+    - name: All Node Ready
+      ansible.builtin.assert:
+        that: node_info.resources | selectattr('status.conditions', 'defined') | json_query('[].status.conditions[?type==`Ready`&&status==`True`]') | list | length == 6
+        fail_msg: "Not all nodes are ready"
+        success_msg: "All nodes are ready"
