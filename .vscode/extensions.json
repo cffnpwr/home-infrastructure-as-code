@@ -8,6 +8,7 @@
     "yzhang.markdown-all-in-one",
     "ms-azuretools.vscode-docker",
     "samuelcolvin.jinjahtml",
-    "tamasfe.even-better-toml"
+    "tamasfe.even-better-toml",
+    "github.vscode-github-actions"
   ]
 }

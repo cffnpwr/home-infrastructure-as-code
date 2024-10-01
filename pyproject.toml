@@ -13,6 +13,5 @@ dependencies = [
 [tool.uv]
 dev-dependencies = [
     "ansible-lint>=24.9.2 ; platform_system != 'Windows'",
-    "ansible-lint>=6.8.7",
     "molecule>=24.9.0",
 ]

@@ -34,7 +34,8 @@
         "redhat.ansible",
         "yzhang.markdown-all-in-one",
         "samuelcolvin.jinjahtml",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "github.vscode-github-actions"
       ]
     }
   }

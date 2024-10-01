@@ -1,0 +1,31 @@
+name: Lint
+on:
+  push:
+    branches-ignore:
+      - main
+      - release/*
+
+jobs:
+  ansible_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: uv sync
+        run: uv sync
+
+      - name: Set Vault Password
+        env:
+          VAULT_PASS: ${{ secrets.VAULT_PASS }}
+        run: echo "${VAULT_PASS}" > ./vault_pass
+
+      - name: uv run ansible-lint
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: ./vault_pass
+        run: uv run ansible-lint

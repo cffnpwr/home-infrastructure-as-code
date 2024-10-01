@@ -51,36 +51,8 @@ wheels = [
 
 [[package]]
 name = "ansible-lint"
-version = "6.8.7"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "platform_system == 'Windows'",
-]
-dependencies = [
-    { name = "ansible-compat", marker = "platform_system == 'Windows'" },
-    { name = "ansible-core", marker = "platform_system == 'Windows'" },
-    { name = "black", marker = "platform_system == 'Windows'" },
-    { name = "filelock", marker = "platform_system == 'Windows'" },
-    { name = "jsonschema", marker = "platform_system == 'Windows'" },
-    { name = "packaging", marker = "platform_system == 'Windows'" },
-    { name = "pyyaml", marker = "platform_system == 'Windows'" },
-    { name = "rich", marker = "platform_system == 'Windows'" },
-    { name = "ruamel-yaml", version = "0.17.40", source = { registry = "https://pypi.org/simple" }, marker = "platform_system == 'Windows'" },
-    { name = "wcmatch", marker = "platform_system == 'Windows'" },
-    { name = "yamllint", marker = "platform_system == 'Windows'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6a/83/08cd79e47452c0faf9325e19c9a1dd26fabfeaaa8733804165a066c19479/ansible-lint-6.8.7.tar.gz", hash = "sha256:de3de4e57cd54e17c1ec3a0b4a21d4811838e77d67b56cbe8f91107f2a434432", size = 315996 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/02/d1/00064932c45ea1d91792d18561d0f6d0594ff8c4f03f073c3300b90a0e14/ansible_lint-6.8.7-py3-none-any.whl", hash = "sha256:1824afce2a5619b47c19f6377a0d85b4f39e80b1fc1857191d6a908d68396bf9", size = 232998 },
-]
-
-[[package]]
-name = "ansible-lint"
 version = "24.9.2"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "platform_system != 'Windows'",
-]
 dependencies = [
     { name = "ansible-compat", marker = "platform_system != 'Windows'" },
     { name = "ansible-core", marker = "platform_system != 'Windows'" },
@@ -92,9 +64,9 @@ dependencies = [
     { name = "pathspec", marker = "platform_system != 'Windows'" },
     { name = "pyyaml", marker = "platform_system != 'Windows'" },
     { name = "rich", marker = "platform_system != 'Windows'" },
-    { name = "ruamel-yaml", version = "0.18.6", source = { registry = "https://pypi.org/simple" }, marker = "platform_system != 'Windows'" },
+    { name = "ruamel-yaml", marker = "platform_system != 'Windows'" },
     { name = "subprocess-tee", marker = "platform_system != 'Windows'" },
-    { name = "wcmatch", marker = "platform_system != 'Windows'" },
+    { name = "wcmatch", marker = "platform_system != 'Windows' and python_full_version >= '3.12'" },
     { name = "yamllint", marker = "platform_system != 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cc/7a/6b4f1d54c8d5157a97a9ebeee77398871b15e2cffa41e3e425af1717244e/ansible_lint-24.9.2.tar.gz", hash = "sha256:7cff6c5af10ef996b7c6010cbd48c91592764ae098f2b05408726899a1066a7f", size = 536244 }
@@ -116,18 +88,17 @@ name = "black"
 version = "24.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click" },
-    { name = "mypy-extensions" },
-    { name = "packaging" },
-    { name = "pathspec" },
-    { name = "platformdirs" },
+    { name = "click", marker = "platform_system != 'Windows'" },
+    { name = "mypy-extensions", marker = "platform_system != 'Windows'" },
+    { name = "packaging", marker = "platform_system != 'Windows'" },
+    { name = "pathspec", marker = "platform_system != 'Windows'" },
+    { name = "platformdirs", marker = "platform_system != 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/04/b0/46fb0d4e00372f4a86a6f8efa3cb193c9f64863615e39010b1477e010578/black-24.8.0.tar.gz", hash = "sha256:2500945420b6784c38b9ee885af039f5e7471ef284ab03fa35ecdde4688cd83f", size = 644810 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a2/a8/05fb14195cfef32b7c8d4585a44b7499c2a4b205e1662c427b941ed87054/black-24.8.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:7c046c1d1eeb7aea9335da62472481d3bbf3fd986e093cffd35f4385c94ae368", size = 1646132 },
     { url = "https://files.pythonhosted.org/packages/41/77/8d9ce42673e5cb9988f6df73c1c5c1d4e9e788053cccd7f5fb14ef100982/black-24.8.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:649f6d84ccbae73ab767e206772cc2d7a393a001070a4c814a546afd0d423aed", size = 1448665 },
     { url = "https://files.pythonhosted.org/packages/cc/94/eff1ddad2ce1d3cc26c162b3693043c6b6b575f538f602f26fe846dfdc75/black-24.8.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:2b59b250fdba5f9a9cd9d0ece6e6d993d91ce877d121d161e4698af3eb9c1018", size = 1762458 },
-    { url = "https://files.pythonhosted.org/packages/28/ea/18b8d86a9ca19a6942e4e16759b2fa5fc02bbc0eb33c1b866fcd387640ab/black-24.8.0-cp312-cp312-win_amd64.whl", hash = "sha256:6e55d30d44bed36593c3163b9bc63bf58b3b30e4611e4d88a0c3c239930ed5b2", size = 1436109 },
     { url = "https://files.pythonhosted.org/packages/27/1e/83fa8a787180e1632c3d831f7e58994d7aaf23a0961320d21e84f922f919/black-24.8.0-py3-none-any.whl", hash = "sha256:972085c618ee94f402da1af548a4f218c754ea7e5dc70acb168bfaca4c2542ed", size = 206504 },
 ]
 
@@ -312,8 +283,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "ansible-lint", version = "6.8.7", source = { registry = "https://pypi.org/simple" }, marker = "platform_system == 'Windows'" },
-    { name = "ansible-lint", version = "24.9.2", source = { registry = "https://pypi.org/simple" }, marker = "platform_system != 'Windows'" },
+    { name = "ansible-lint", marker = "platform_system != 'Windows'" },
     { name = "molecule" },
 ]
 
@@ -328,7 +298,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "ansible-lint", specifier = ">=6.8.7" },
     { name = "ansible-lint", marker = "platform_system != 'Windows'", specifier = ">=24.9.2" },
     { name = "molecule", specifier = ">=24.9.0" },
 ]
@@ -648,28 +617,10 @@ wheels = [
 
 [[package]]
 name = "ruamel-yaml"
-version = "0.17.40"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "platform_system == 'Windows'",
-]
-dependencies = [
-    { name = "ruamel-yaml-clib", marker = "python_full_version < '3.13' and platform_python_implementation == 'CPython' and platform_system == 'Windows'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d1/d6/eb2833ccba5ea36f8f4de4bcfa0d1a91eb618f832d430b70e3086821f251/ruamel.yaml-0.17.40.tar.gz", hash = "sha256:6024b986f06765d482b5b07e086cc4b4cd05dd22ddcbc758fa23d54873cf313d", size = 137672 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/35/79/5e2cffa1c77432f11cd93a5351f30732c997a239d3a3090856a72d6d8ba7/ruamel.yaml-0.17.40-py3-none-any.whl", hash = "sha256:b16b6c3816dff0a93dca12acf5e70afd089fa5acb80604afd1ffa8b465b7722c", size = 113666 },
-]
-
-[[package]]
-name = "ruamel-yaml"
 version = "0.18.6"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "platform_system != 'Windows'",
-]
 dependencies = [
-    { name = "ruamel-yaml-clib", marker = "python_full_version < '3.13' and platform_python_implementation == 'CPython' and platform_system != 'Windows'" },
+    { name = "ruamel-yaml-clib", marker = "python_full_version < '3.13' and platform_python_implementation == 'CPython' and platform_system != 'Windows' and python_full_version >= '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/29/81/4dfc17eb6ebb1aac314a3eb863c1325b907863a1b8b1382cdffcb6ac0ed9/ruamel.yaml-0.18.6.tar.gz", hash = "sha256:8b27e6a217e786c6fbe5634d8f3f11bc63e0f80f6a5890f28863d9c45aac311b", size = 143362 }
 wheels = [
@@ -688,8 +639,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/55/b3/e2531a050758b717c969cbf76c103b75d8a01e11af931b94ba656117fbe9/ruamel.yaml.clib-0.2.8-cp312-cp312-manylinux_2_24_aarch64.whl", hash = "sha256:1dc67314e7e1086c9fdf2680b7b6c2be1c0d8e3a8279f2e993ca2a7545fecf62", size = 643946 },
     { url = "https://files.pythonhosted.org/packages/0d/aa/06db7ca0995b513538402e11280282c615b5ae5f09eb820460d35fb69715/ruamel.yaml.clib-0.2.8-cp312-cp312-musllinux_1_1_i686.whl", hash = "sha256:3213ece08ea033eb159ac52ae052a4899b56ecc124bb80020d9bbceeb50258e9", size = 692169 },
     { url = "https://files.pythonhosted.org/packages/27/38/4cf4d482b84ecdf51efae6635cc5483a83cf5ca9d9c13e205a750e251696/ruamel.yaml.clib-0.2.8-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:aab7fd643f71d7946f2ee58cc88c9b7bfc97debd71dcc93e03e2d174628e7e2d", size = 740325 },
-    { url = "https://files.pythonhosted.org/packages/6f/67/c62c6eea53a4feb042727a3d6c18f50dc99683c2b199c06bd2a9e3db8e22/ruamel.yaml.clib-0.2.8-cp312-cp312-win32.whl", hash = "sha256:5c365d91c88390c8d0a8545df0b5857172824b1c604e867161e6b3d59a827eaa", size = 98639 },
-    { url = "https://files.pythonhosted.org/packages/10/d2/52a3d810d0b5b3720725c0504a27b3fced7b6f310fe928f7019d79387bc1/ruamel.yaml.clib-0.2.8-cp312-cp312-win_amd64.whl", hash = "sha256:1758ce7d8e1a29d23de54a16ae867abd370f01b5a69e1a3ba75223eaa3ca1a1b", size = 115305 },
 ]
 
 [[package]]
@@ -727,8 +676,8 @@ name = "yamllint"
 version = "1.35.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pathspec" },
-    { name = "pyyaml" },
+    { name = "pathspec", marker = "platform_system != 'Windows'" },
+    { name = "pyyaml", marker = "platform_system != 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/da/06/d8cee5c3dfd550cc0a466ead8b321138198485d1034130ac1393cc49d63e/yamllint-1.35.1.tar.gz", hash = "sha256:7a003809f88324fd2c877734f2d575ee7881dd9043360657cc8049c809eba6cd", size = 134583 }
 wheels = [
