@@ -30,6 +30,9 @@ jobs:
         with:
           version: "latest"
 
+      - name: Set uv path
+        run: echo "UV_PATH=$(which uv)" >> $GITHUB_ENV
+
       - name: uv sync
         run: uv sync
 
@@ -41,4 +44,4 @@ jobs:
       - name: molecule test
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: ${PWD}/vault_pass
-        run: sudo -s -u ${USER} /home/runner/.local/bin/uv run molecule test
+        run: sudo -s -u ${USER} ${{ env.UV_PATH }} run molecule test
