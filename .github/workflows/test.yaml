@@ -41,6 +41,11 @@ jobs:
           VAULT_PASS: ${{ secrets.VAULT_PASS }}
         run: echo "${VAULT_PASS}" > ${PWD}/vault_pass
 
+      - name: Set encrypted private key
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+        run: echo "${PRIVATE_KEY}" > ${PWD}/encrypted_key
+
       - name: molecule test
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: ${PWD}/vault_pass
