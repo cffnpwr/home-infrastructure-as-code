@@ -25,7 +25,7 @@ jobs:
           VAULT_PASS: ${{ secrets.VAULT_PASS }}
         run: echo "${VAULT_PASS}" > ./vault_pass
 
-      - name: uv run ansible-lint
+      - name: ansible-lint
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: ./vault_pass
         run: uv run ansible-lint
