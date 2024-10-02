@@ -31,8 +31,11 @@ jobs:
   ansible_lint:
     needs:
       - check_impact
-    if: needs.check_impact.outputs.has_changed_ansible_files
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.job }}-${{ github.ref }}
+      cancel-in-progress: true
+    if: needs.check_impact.outputs.has_changed_ansible_files
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
