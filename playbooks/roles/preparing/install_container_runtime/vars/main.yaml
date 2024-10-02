@@ -1,0 +1,6 @@
+preparing_install_container_runtime_apt_packages:
+  - containerd.io
+  - docker-ce
+  - docker-ce-cli
+  - docker-buildx-plugin
+  - docker-compose-plugin

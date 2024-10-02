@@ -1,0 +1,23 @@
+- name: If not Joined
+  when: ansible_host in worker_nodes_not_joined
+  block:
+    - name: Execute Kubeadm Reset
+      become: true
+      changed_when: false
+      ansible.builtin.command: kubeadm reset --force
+
+    - name: Delete Configs
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ join_worker_nodes_delete_configs }}"
+
+    - name: Kubeadm Join
+      become: true
+      changed_when: false
+      ansible.builtin.command: "kubeadm join {{ apiserver_endpoint }}:6443 --token {{ token }} --discovery-token-ca-cert-hash {{ token_ca_certs }}"
+
+    - name: Reboot
+      become: true
+      ansible.builtin.reboot:

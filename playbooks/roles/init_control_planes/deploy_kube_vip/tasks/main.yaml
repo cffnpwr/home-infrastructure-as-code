@@ -1,0 +1,85 @@
+- name: Download Kube VIP RBAC Manifest
+  ansible.builtin.get_url:
+    url: https://kube-vip.io/manifests/rbac.yaml
+    dest: /tmp/kube-vip-rbac.yaml
+    mode: "644"
+
+- name: Deploy RBAC
+  kubernetes.core.k8s:
+    state: present
+    src: /tmp/kube-vip-rbac.yaml
+
+- name: Get Control Plane IP Addresses
+  vars:
+    _ip_addresses: "{{ groups.control_planes | map('extract', hostvars, ['ansible_host']) | list }}"
+  ansible.builtin.set_fact:
+    ip_addresses: "{{ _ip_addresses }}"
+    bgp_peers: "{{ _ip_addresses | product([':65000::false']) | map('join', '') | join(',') }}"
+  register: control_planes
+
+- name: Generate Kube VIP Daemonset Manifest
+  changed_when: false
+  vars:
+    # yamllint disable-line rule:line-length
+    _kube_vip_version: "{{ (kube_vip_version | default((lookup('url', 'https://api.github.com/repos/kube-vip/kube-vip/releases/latest') | from_json).tag_name)) |
+      regex_replace('^v?(([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?)$', 'v\\1') }}"
+    ip_address: "{{ ansible_host | ansible.utils.ipaddr | default(lookup('dig', ansible_host)) }}"
+    # yamllint disable-line rule:line-length
+    interface: "{{ ansible_interfaces | map('extract', ansible_facts) | selectattr('ipv4', 'defined') | selectattr('ipv4.address', 'match', ip_address) | map(attribute='device')
+      | list | first }}"
+  community.docker.docker_container:
+    name: kube-vip
+    image: ghcr.io/kube-vip/kube-vip:{{ _kube_vip_version }}
+    state: started
+    network_mode: host
+    detach: false
+    cleanup: true
+    # yamllint disable-line rule:line-length
+    command: manifest daemonset --interface {{ interface }} --address {{ vip }} --inCluster --taint --controlplane --services --bgp --localAS 65000 --bgpRouterID
+      {{ ip_address }} --bgppeers {{ bgp_peers }}
+  register: kube_vip
+
+- name: Save Kube VIP Daemonset Manifest
+  ansible.builtin.copy:
+    content: "{{ kube_vip.container.Output }}"
+    dest: /tmp/kube-vip-daemonset.yaml
+    mode: "644"
+
+- name: Deploy Kube VIP Daemonset
+  kubernetes.core.k8s:
+    state: present
+    src: /tmp/kube-vip-daemonset.yaml
+
+- name: Restore /etc/hosts
+  block:
+    - name: Restore Temporary Change /etc/hosts
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: "{{ apiserver_endpoint }}$"
+        line: "{{ vip }} {{ apiserver_endpoint }}"
+
+  rescue:
+    - name: Copy /etc/hosts to /tmp/hosts
+      ansible.builtin.copy:
+        remote_src: true
+        src: /etc/hosts
+        dest: /tmp/hosts
+        mode: "644"
+
+    - name: Restore the VIP and the API server endpoint to /tmp/hosts
+      ansible.builtin.lineinfile:
+        path: /tmp/hosts
+        regexp: "{{ apiserver_endpoint }}$"
+        line: "{{ vip }} {{ apiserver_endpoint }}"
+
+    - name: Copy /tmp/hosts to /etc/hosts
+      changed_when: false
+      become: true
+      ansible.builtin.command: cp /tmp/hosts /etc/hosts
+
+    - name: Remove /tmp/hosts
+      changed_when: false
+      ansible.builtin.file:
+        path: /tmp/hosts
+        state: absent

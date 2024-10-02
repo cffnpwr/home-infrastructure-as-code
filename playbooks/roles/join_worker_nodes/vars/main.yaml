@@ -1,0 +1,6 @@
+join_worker_nodes_delete_configs:
+  - /etc/cni/
+  - /etc/kubernetes/
+  - /var/lib/cni/
+  - /var/lib/etcd/
+  - /var/lib/kubelet/

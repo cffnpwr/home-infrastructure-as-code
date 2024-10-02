@@ -1,0 +1,3 @@
+- name: Install Cilium
+  ansible.builtin.import_tasks: ./cilium.yaml
+  when: cni == "cilium"

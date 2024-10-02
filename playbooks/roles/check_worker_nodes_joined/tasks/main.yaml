@@ -1,0 +1,17 @@
+- name: Check Node Info
+  failed_when: false
+  kubernetes.core.k8s_info:
+    kind: Node
+  register: node_info
+
+- name: Check Worker Nodes Joined
+  vars:
+    # yamllint disable rule:line-length
+    node_ip_addresses: "{{ node_info.resources | map(attribute='status.addresses') | flatten | selectattr('type', 'eq', 'InternalIP') | map(attribute='address') | list }}"
+    worker_nodes_ip_addresses: "{{ dict(groups['worker_nodes'] | zip(groups['worker_nodes'] | map('extract', hostvars, ['ansible_host']) | list)) }}"
+  failed_when: false
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  ansible.builtin.set_fact:
+    worker_nodes_not_joined: "{{ worker_nodes_ip_addresses | dict2items | rejectattr('value', 'in', node_ip_addresses) | map(attribute='value') | list }}"
+  with_items: "{{ groups['worker_nodes'] }}"

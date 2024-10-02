@@ -1,0 +1,149 @@
+- name: Create Kubeadm Config
+  ansible.builtin.template:
+    src: kubeadm-config.yaml.j2
+    dest: "{{ ansible_env.HOME }}/kubeadm-config.yaml"
+    mode: "644"
+
+- name: Check Cluster Info
+  failed_when: false
+  kubernetes.core.k8s_cluster_info:
+  register: cluster_info
+
+- name: Kubeadm Init
+  when: cluster_info.version is not defined
+  block:
+    - name: Execute Kubeadm Reset
+      become: true
+      changed_when: false
+      ansible.builtin.command: kubeadm reset --force
+
+    - name: Delete Configs
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ init_control_planes_first_control_plane_delete_configs }}"
+
+    - name: Temporary Change /etc/hosts
+      block:
+        - name: Temporary Change /etc/hosts
+          become: true
+          ansible.builtin.lineinfile:
+            path: /etc/hosts
+            regexp: "{{ apiserver_endpoint }}$"
+            line: 127.0.0.1 {{ apiserver_endpoint }}
+
+      rescue:
+        - name: Copy /etc/hosts to /tmp/hosts
+          ansible.builtin.copy:
+            remote_src: true
+            src: /etc/hosts
+            dest: /tmp/hosts
+            mode: "644"
+
+        - name: Add the VIP and the API server endpoint to /tmp/hosts
+          ansible.builtin.lineinfile:
+            path: /tmp/hosts
+            regexp: "{{ apiserver_endpoint }}$"
+            line: 127.0.0.1 {{ apiserver_endpoint }}
+
+        - name: Copy /tmp/hosts to /etc/hosts
+          changed_when: false
+          become: true
+          ansible.builtin.command: cp /tmp/hosts /etc/hosts
+
+        - name: Remove /tmp/hosts
+          changed_when: false
+          ansible.builtin.file:
+            path: /tmp/hosts
+            state: absent
+
+    - name: Kubeadm Init
+      become: true
+      changed_when: false
+      ansible.builtin.command: kubeadm init --config "{{ ansible_env.HOME }}/kubeadm-config.yaml" --upload-certs
+      register: kubeadm_init
+
+    - name: Parse Certificate Key
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      ansible.builtin.set_fact:
+        cert_key: "{{ kubeadm_init.stdout_lines | select('search', '\\t--control-plane') | last | split(' ') | last }}"
+      loop: "{{ groups['control_planes'] }}"
+
+- name: Get Certificate Key
+  when: cluster_info.exception is not defined
+  block:
+    - name: Kubeadm Init
+      become: true
+      changed_when: false
+      ansible.builtin.command: kubeadm init phase upload-certs --upload-certs
+      register: kubeadm_init
+
+    - name: Parse Certificate Key
+      delegate_to: "{{ item }}"
+      delegate_facts: true
+      ansible.builtin.set_fact:
+        cert_key: "{{ kubeadm_init.stdout_lines | last }}"
+      loop: "{{ groups['control_planes'] }}"
+
+- name: Create ~/.kube
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.kube"
+    state: directory
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: "755"
+
+- name: Copy from /etc/kubernetes/admin.conf to ~/.kube/config
+  become: true
+  ansible.builtin.copy:
+    remote_src: true
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ ansible_env.HOME }}/.kube/config"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: "600"
+
+- name: Get Kubeadm Token
+  changed_when: false
+  ansible.builtin.command: kubeadm token list -o yaml
+  register: _token
+
+- name: Set Tokens
+  ansible.builtin.set_fact:
+    # yamllint disable-line rule:line-length
+    tokens: "{{ _token.stdout | from_yaml_all | selectattr('groups', 'defined') | selectattr('groups', 'contains', 'system:bootstrappers:kubeadm:default-node-token')
+      | map(attribute='token') | list }}"
+
+- name: If not Exists
+  when: tokens | length == 0
+  block:
+    - name: Generate Token
+      changed_when: false
+      ansible.builtin.command: kubeadm token create
+      register: _token
+
+    - name: Set Tokens
+      ansible.builtin.set_fact:
+        tokens: "{{ _token.stdout_lines }}"
+
+- name: Generate Token CA Certs Hash
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      set -o pipefail
+      openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | \
+      openssl rsa -pubin -outform der 2>/dev/null | \
+      openssl dgst -sha256 -hex | sed 's/^.* //'
+    executable: /bin/bash
+  register: _token_ca_certs
+
+- name: Format Token
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  ansible.builtin.set_fact:
+    # yamllint disable-line rule:line-length
+    token: "{{ tokens | first }}"
+    token_ca_certs: "{{ 'sha256:' ~ _token_ca_certs.stdout }}"
+  loop: "{{ groups['all'] }}"

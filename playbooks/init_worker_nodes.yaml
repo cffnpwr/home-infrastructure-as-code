@@ -1,0 +1,14 @@
+- name: Check Worker Nodes Joined
+  hosts: control_planes[0]
+  roles:
+    - check_worker_nodes_joined
+
+- name: Join Worker Nodes
+  hosts: worker_nodes
+  roles:
+    - join_worker_nodes
+
+- name: Wait Worker Nodes Ready
+  hosts: control_planes[0]
+  roles:
+    - wait_worker_nodes_ready

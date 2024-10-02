@@ -1,0 +1,58 @@
+- name: Check Cluster Info
+  failed_when: false
+  kubernetes.core.k8s_cluster_info:
+  register: cluster_info
+
+- name: Kubeadm Join
+  when: cluster_info.exception is defined
+  block:
+    - name: Execute Kubeadm Reset
+      become: true
+      changed_when: false
+      ansible.builtin.command: kubeadm reset --force
+
+    - name: Delete Configs
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ init_control_planes_join_control_planes_delete_configs }}"
+
+    - name: Execute Kubeadm Join
+      become: true
+      changed_when: false
+      # yamllint disable-line rule:line-length
+      ansible.builtin.command: kubeadm join {{ apiserver_endpoint }}:6443 --token {{ token }} --discovery-token-ca-cert-hash {{ token_ca_certs }} --control-plane
+        --certificate-key {{ cert_key }}
+
+    - name: Create ~/.kube
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        owner: "{{ ansible_env.USER }}"
+        group: "{{ ansible_env.USER }}"
+        mode: "755"
+
+    - name: Copy from /etc/kubernetes/admin.conf to ~/.kube/config
+      become: true
+      ansible.builtin.copy:
+        remote_src: true
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ ansible_env.USER }}"
+        group: "{{ ansible_env.USER }}"
+        mode: "600"
+
+    - name: Reboot
+      become: true
+      ansible.builtin.reboot:
+
+- name: Wait Node Ready
+  failed_when: false
+  kubernetes.core.k8s_info:
+    kind: Node
+  register: node_info
+  # yamllint disable rule:line-length
+  until: node_info.resources is defined and node_info | json_query('resources[?status.addresses[?type==`InternalIP`&&address==`' ~ ansible_host ~ '`]].status.conditions[] | [?type==`Ready`] | [0].status') == 'True'
+  retries: 60
+  delay: 10

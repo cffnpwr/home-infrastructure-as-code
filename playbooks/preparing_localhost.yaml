@@ -1,0 +1,12 @@
+- name: Preparing Localhost
+  hosts: localhost
+  gather_facts: false
+  vars:
+    src_key: ./encrypted_key
+    dest_key: ./decrypted_key
+  tasks:
+    - name: Copy Private Key
+      ansible.builtin.copy:
+        src: "{{ lookup('env', 'PWD') }}/{{ src_key }}"
+        dest: "{{ dest_key }}"
+        mode: "600"

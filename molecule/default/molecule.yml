@@ -1,0 +1,39 @@
+dependency:
+  name: galaxy
+platforms:
+  - name: control0
+    address: 10.255.255.10
+    box: cloud-image/debian-12
+    groups:
+      - control_planes
+  - name: control1
+    address: 10.255.255.11
+    box: cloud-image/debian-12
+    groups:
+      - control_planes
+  - name: control2
+    address: 10.255.255.12
+    box: cloud-image/debian-12
+    groups:
+      - control_planes
+  - name: worker0
+    address: 10.255.255.20
+    box: cloud-image/debian-12
+    groups:
+      - worker_nodes
+  - name: worker1
+    address: 10.255.255.21
+    box: cloud-image/debian-12
+    groups:
+      - worker_nodes
+  - name: worker2
+    address: 10.255.255.22
+    box: cloud-image/debian-12
+    groups:
+      - worker_nodes
+provisioner:
+  name: ansible
+  ansible_args:
+    - --inventory=../common/hosts.yaml
+  lint:
+    name: yamllint

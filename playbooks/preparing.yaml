@@ -1,0 +1,11 @@
+- name: Preparing
+  hosts: "{{ target | default('all') }}"
+  gather_facts: false
+  roles:
+    - install_python
+    - preparing/install_dependencies
+    - preparing/swap_off
+    - preparing/apply_kernel_module
+    - preparing/install_container_runtime
+    - preparing/install_kubetools
+    - preparing/configure_hosts

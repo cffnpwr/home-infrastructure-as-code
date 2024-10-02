@@ -1,0 +1,2 @@
+playbooks/init_control_planes.yaml role-name[path]
+playbooks/preparing.yaml role-name[path]

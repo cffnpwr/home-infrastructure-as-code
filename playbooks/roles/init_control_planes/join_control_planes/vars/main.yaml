@@ -1,0 +1,7 @@
+init_control_planes_join_control_planes_delete_configs:
+  - /etc/cni/
+  - /etc/kubernetes/
+  - /var/lib/cni/
+  - /var/lib/etcd/
+  - /var/lib/kubelet/
+  - "{{ lookup('env', 'HOME') }}/.kube/"

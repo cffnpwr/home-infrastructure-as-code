@@ -2,6 +2,27 @@
   "name": "cffnpwr home infrastructure as code",
   "dockerFile": "./Dockerfile",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "uv sync; vagrant plugin install vagrant-libvirt",
+  "mounts": [
+    {
+      "source": "/lib/modules",
+      "target": "/lib/modules",
+      "type": "bind"
+    },
+    {
+      "source": "/dev",
+      "target": "/dev",
+      "type": "bind"
+    },
+    {
+      "source": "vagrant-libvirt",
+      "target": "/home/vscode/.vagrant.d",
+      "type": "volume"
+    }
+  ],
+  "overrideCommand": false,
+  "privileged": true,
   "customizations": {
     "vscode": {
       "extensions": [
@@ -11,7 +32,10 @@
         "gamunu.opentofu",
         "ms-azuretools.vscode-docker",
         "redhat.ansible",
-        "yzhang.markdown-all-in-one"
+        "yzhang.markdown-all-in-one",
+        "samuelcolvin.jinjahtml",
+        "tamasfe.even-better-toml",
+        "github.vscode-github-actions"
       ]
     }
   }

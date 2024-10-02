@@ -1,0 +1,141 @@
+- name: Create VM
+  vars:
+    vm_configs: &vm_configs
+      - name: prepared
+        address: 10.255.255.254
+        box: cloud-image/debian-12
+  ansible.builtin.import_playbook: ../common/create_vm.yaml
+
+- name: Preparing Localhost
+  ansible.builtin.import_playbook: ../../playbooks/preparing_localhost.yaml
+
+- name: Create Preparing VM
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Add Host
+      ansible.builtin.add_host:
+        name: "{{ item.Host }}"
+        ansible_ssh_host: "{{ item.HostName }}"
+        ansible_ssh_port: "{{ item.Port }}"
+        ansible_ssh_user: "{{ item.User }}"
+        ansible_ssh_private_key_file: "{{ item.IdentityFile }}"
+        ansible_connection: ssh
+        groups: preparing_hosts
+      loop: "{{ ssh_config }}"
+      register: preparing_hosts
+
+- name: Include Vars
+  hosts: preparing_hosts
+  gather_facts: false
+  vars:
+    recreate_vm: true
+  tasks:
+    - name: Include Vars
+      ansible.builtin.include_vars:
+        file: ../common/hosts.yaml
+      register: _host_vars
+
+- name: Preparing
+  vars:
+    recreate_vm: true
+    target: preparing_hosts
+    k8s_version: "{{ _host_vars.ansible_facts.all.vars.k8s_version }}"
+    cri: "{{ _host_vars.ansible_facts.all.vars.cri }}"
+    apiserver_endpoint: "{{ _host_vars.ansible_facts.all.vars.apiserver_endpoint }}"
+    vip: "{{ _host_vars.ansible_facts.all.vars.vip }}"
+  ansible.builtin.import_playbook: ../../playbooks/preparing.yaml
+
+- name: Reset VM
+  hosts: preparing_hosts
+  gather_facts: false
+  vars:
+    recreate_vm: true
+  tasks:
+    - name: Delete Unique Files
+      vars:
+        files:
+          - /etc/udev/rules.d/70-persistent-net.rules
+      become: true
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ files }}"
+
+    - name: Blank Files
+      vars:
+        files:
+          - /etc/machine-id
+      become: true
+      ansible.builtin.copy:
+        content: ""
+        dest: "{{ item }}"
+        mode: "644"
+      loop: "{{ files }}"
+
+- name: Packaging VM
+  hosts: localhost
+  gather_facts: false
+  vars:
+    vm_configs: *vm_configs
+  tasks:
+    - name: Delete Box File if Exists
+      ansible.builtin.file:
+        path: "{{ molecule_ephemeral_directory }}/{{ item.box }}-{{ item.name }}.box"
+        state: absent
+      loop: "{{ vm_configs }}"
+
+    - name: Stop VM
+      changed_when: false
+      ansible.builtin.command:
+        cmd: vagrant halt
+        chdir: "{{ molecule_ephemeral_directory }}"
+
+    - name: Packaging VM
+      environment:
+        # yamllint disable rule:line-length
+        VAGRANT_LIBVIRT_VIRT_SYSPREP_OPERATIONS: tmp-files,udev-persistent-net,defaults,net-hwaddr,ssh-hostkeys,net-hostname,dhcp-server-state,logfiles,machine-id,dhcp-client-state,bash-history,customize
+      changed_when: false
+      ansible.builtin.command:
+        cmd: vagrant package --output ./{{ item.box }}-{{ item.name }}.box
+        chdir: "{{ molecule_ephemeral_directory }}"
+      loop: "{{ vm_configs }}"
+      async: 180
+      poll: 0
+      register: _package
+
+    - name: Wait for Packaging VM
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      loop: "{{ _package.results }}"
+      register: _package
+      until: _package.finished
+      retries: 18
+      delay: 10
+
+    - name: Stop VM
+      changed_when: false
+      ansible.builtin.command:
+        cmd: vagrant destroy -f
+        chdir: "{{ molecule_ephemeral_directory }}"
+
+    - name: Add Box
+      vars:
+        box_name: "{{ item.box }}-{{ item.name }}"
+      changed_when: false
+      ansible.builtin.command:
+        cmd: vagrant box add --force --name {{ box_name }} ./{{ box_name }}.box
+        chdir: "{{ molecule_ephemeral_directory }}"
+      loop: "{{ vm_configs }}"
+      async: 180
+      poll: 0
+      register: _box
+
+    - name: Wait for Add Box
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      loop: "{{ _box.results }}"
+      register: _box
+      until: _box.finished
+      retries: 18
+      delay: 10

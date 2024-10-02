@@ -1,0 +1,15 @@
+- name: Collect Gather Facts
+  ansible.builtin.gather_facts:
+    gather_subset:
+      - min
+
+- name: Install Kubetools for apt
+  ansible.builtin.import_tasks: ./apt.yaml
+  when: ansible_facts.pkg_mgr == "apt"
+
+- name: Config Kubelet
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/default/kubelet
+    regexp: "^KUBELET_EXTRA_ARGS="
+    line: "KUBELET_EXTRA_ARGS=--node-ip={{ ansible_host | ansible.utils.ipaddr | default(lookup('dig', ansible_host)) }}"

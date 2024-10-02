@@ -1,0 +1,12 @@
+- name: Run Playbook
+  ansible.builtin.import_playbook: ../../playbooks/playbook.yaml
+
+- name: Copy kubeconfig to localhost
+  hosts: control_planes[0]
+  gather_facts: false
+  tasks:
+    - name: Copy kubeconfig to localhost
+      ansible.builtin.fetch:
+        src: "{{ ansible_env.HOME }}/.kube/config"
+        dest: /tmp/kubeconfig
+        flat: true
