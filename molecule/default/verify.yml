@@ -2,12 +2,6 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Get Node Info
-      kubernetes.core.k8s_info:
-        kind: Node
-        kubeconfig: /tmp/kubeconfig
-      register: node_info
-
     - name: Configure /etc/hosts
       block:
         - name: Add the VIP and the API server endpoint to /etc/hosts
@@ -41,6 +35,12 @@
           ansible.builtin.file:
             path: /tmp/hosts
             state: absent
+
+    - name: Get Node Info
+      kubernetes.core.k8s_info:
+        kind: Node
+        kubeconfig: /tmp/kubeconfig
+      register: node_info
 
     - name: Check 6 nodes are present
       ansible.builtin.assert:
