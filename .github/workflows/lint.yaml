@@ -33,7 +33,7 @@ jobs:
       - check_impact
     runs-on: ubuntu-latest
     concurrency:
-      group: ${{ github.job }}-${{ github.ref }}
+      group: ${{ github.job }}-${{ github.ref }}-ansible-lint
       cancel-in-progress: true
     if: needs.check_impact.outputs.has_changed_ansible_files
     steps:
