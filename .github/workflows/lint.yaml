@@ -1,35 +1,43 @@
-name: Lint
 on:
+  pull_request:
+    branches:
+      - main
+      - release/*
   push:
     branches-ignore:
       - main
       - release/*
-    paths:
-      - molecule/**
-      - playbooks/**
-      - .github/workflows/lint.yaml
 
 jobs:
+  check_impact:
+    runs-on: ubuntu-latest
+    outputs:
+      has_changed_ansible_files: ${{ steps.check_changed_ansible_files.outputs.any_changed == 'true' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Changed Files
+        id: check_changed_ansible_files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            molecule/**
+            playbooks/**
+            .github/workflows/lint.yaml
+
   ansible_lint:
+    needs:
+      - check_impact
+    if: needs.check_impact.outputs.has_changed_ansible_files
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v3
+      - name: Run Ansible Lint
+        uses: ./.github/actions/ansible-lint
         with:
-          version: "latest"
-
-      - name: uv sync
-        run: uv sync
-
-      - name: Set Vault Password
-        env:
-          VAULT_PASS: ${{ secrets.VAULT_PASS }}
-        run: echo "${VAULT_PASS}" > ${PWD}/vault_pass
-
-      - name: ansible-lint
-        env:
-          ANSIBLE_VAULT_PASSWORD_FILE: ${PWD}/vault_pass
-        run: uv run ansible-lint
+          vault-pass: ${{ secrets.VAULT_PASS }}

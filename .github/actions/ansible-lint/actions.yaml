@@ -1,0 +1,32 @@
+name: Run Ansible Lint
+description: Run Ansible Lint
+
+inputs:
+  vault-pass:
+    description: "The Ansible Vault password"
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+
+    - name: uv sync
+      shell: bash
+      run: uv sync
+
+    - name: Set Vault Password
+      env:
+        VAULT_PASS: ${{ inputs.vault-pass }}
+      shell: bash
+      run: echo "${VAULT_PASS}" > ${PWD}/vault_pass
+
+    - name: ansible-lint
+      env:
+        ANSIBLE_VAULT_PASSWORD_FILE: ${PWD}/vault_pass
+      shell: bash
+      run: uv run ansible-lint
